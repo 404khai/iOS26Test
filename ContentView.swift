@@ -8,14 +8,29 @@
 import SwiftUI
 
 struct ContentView: View {
+    @Namespace private var animation
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        NavigationStack {
+            List{
+                
+            }
+            .navigationTitle("AstridOS")
+            .navigationSubtitle("SurfUIKit for AstridOS")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Settings", systemImage: "bell") {
+                        
+                    }
+                }
+                
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Account", systemImage: "person") {
+                        
+                    }
+                }
+            }
         }
-        .padding()
     }
 }
 
