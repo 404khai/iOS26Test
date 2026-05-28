@@ -1,0 +1,22 @@
+//
+//  manga.json
+//  iOS26Test
+//
+//  Created by admin on 5/28/26.
+//
+
+{
+    "mangas": [
+        {"title": "Player", "count": "239", "image": "MangaCovers/player.png", "bgImage": "MangaBanners/player.png", "chapter": "Ch. 245", "time": "1:23 AM", "date": "12/5/25"},
+        {"title": "Ordeal", "count": "27", "image": "MangaCovers/ordeal.png", "bgImage": "MangaBanners/ordeal.png", "chapter": "Ch. 100", "time": "12:41 AM", "date": "12/4/25"},
+        {"title": "Dungeon Raid", "count": "6", "image": "MangaCovers/dungeonraid.png", "bgImage": "MangaBanners/dungeonraid.png", "chapter": "Ch. 95", "time": "5:30 PM", "date": "12/2/25"},
+        {"title": "The World After the Fall", "count": "110", "image": "MangaCovers/twatf.png", "bgImage": "MangaBanners/twatf.png", "chapter": "Ch. 120", "time": "4:15 PM", "date": "12/2/25"},
+        {"title": "Return of the SSSRanker", "count": "118", "image": "MangaCovers/sssranker.png", "bgImage": "MangaBanners/sssranker.png", "chapter": "Ch. 173", "time": "10:56 PM", "date": "12/4/25"},
+        {"title": "Latna Saga...", "count": "115", "image": "MangaCovers/latnasaga.png", "bgImage": "MangaBanners/latnasaga.png", "chapter": "Ch. 110", "time": "9:30 PM", "date": "12/3/25"},
+        {"title": "Superhuman Battlefield", "count": "111", "image": "MangaCovers/shb.png", "bgImage": "MangaBanners/shb.png", "chapter": "Ch. 105", "time": "6:45 PM", "date": "12/2/25"},
+        {"title": "The Regressed Mercenary Machinations", "count": "143", "image": "MangaCovers/mercenary.png", "bgImage": "MangaBanners/mercenary2.png", "chapter": "Ch. 130", "time": "3:00 PM", "date": "12/2/25"},
+    
+    ]
+    
+}
+
