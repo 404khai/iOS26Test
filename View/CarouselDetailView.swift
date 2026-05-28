@@ -3,95 +3,299 @@ import SwiftUI
 struct CarouselDetailView: View {
     let item: ImageModel
     let animation: Namespace.ID
+    @State private var showCategorySheet: Bool = false
+    @State private var selectedCategories: Set<String> = ["DEFAULT"]
+    @State private var showCollapsedHeader: Bool = false
+    
+    private var chapters: [(title: String, date: String)] {
+        (1...10).map { index in
+            ("Chapter \(index)", "\(13 + index)/5/26")
+        }
+    }
+
+    private let categories = ["DEFAULT", "Thriller"]
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 24) {
-                ZStack(alignment: .bottomLeading) {
+            VStack(spacing: 0) {
+                heroSection
+                
+                VStack(alignment: .leading, spacing: 24) {
+                    overviewSection
+                    chapterSection
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 24)
+                .padding(.bottom, 40)
+            }
+        }
+        .coordinateSpace(name: "detailScroll")
+        .background(Color.black.ignoresSafeArea())
+        .ignoresSafeArea(edges: .top)
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
+        .toolbarBackground(showCollapsedHeader ? .visible : .hidden, for: .navigationBar)
+        .toolbarColorScheme(.dark, for: .navigationBar)
+        .onPreferenceChange(HeroHeaderVisibilityKey.self) { minY in
+            showCollapsedHeader = minY < -50
+        }
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                HStack(spacing: 10) {
                     Image(item.image)
                         .resizable()
                         .aspectRatio(contentMode: .fill)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 560)
-                        .clipShape(RoundedRectangle(cornerRadius: 36, style: .continuous))
-                        .overlay {
-                            LinearGradient(
-                                colors: [
-                                    .black.opacity(0.05),
-                                    .black.opacity(0.2),
-                                    .black.opacity(0.55),
-                                    .black
-                                ],
-                                startPoint: .top,
-                                endPoint: .bottom
-                            )
-                            .clipShape(RoundedRectangle(cornerRadius: 36, style: .continuous))
-                        }
-                        .navigationTransition(.zoom(sourceID: item.id, in: animation))
+                        .frame(width: 30, height: 30)
+                        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
 
-                    VStack(alignment: .leading, spacing: 10) {
-                        Text(item.title.uppercased())
-                            .font(.system(size: 38, weight: .bold, design: .rounded))
-                            .foregroundStyle(.white)
-                            .lineLimit(2)
-
-                        Text(item.category.uppercased())
-                            .font(.headline)
-                            .foregroundStyle(.white.opacity(0.9))
-
-                        Text(item.metadataLine)
-                            .font(.subheadline)
-                            .foregroundStyle(.white.opacity(0.85))
-
-                        HStack(spacing: 14) {
-                            Button {
-                            } label: {
-                                Label("Add to Library", systemImage: "book.closed.fill")
-                                    .font(.headline)
-                                    .foregroundStyle(.black)
-                                    .padding(.horizontal, 28)
-                                    .frame(height: 52)
-                                    .background(.white, in: Capsule())
-                            }
-
-                            Button {
-                            } label: {
-                                Image(systemName: "square.and.arrow.down.fill")
-                                    .font(.title3.weight(.semibold))
-                                    .foregroundStyle(.white)
-                                    .frame(width: 52, height: 52)
-                                    .background(.white.opacity(0.18), in: Circle())
-                            }
-                        }
-                    }
-                    .padding(28)
-                }
-
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("Overview")
-                        .font(.title3.weight(.semibold))
+                    Text(item.title)
+                        .font(.headline)
                         .foregroundStyle(.white)
-
-                    Text(item.summary)
-                        .font(.body)
-                        .foregroundStyle(.white.opacity(0.82))
-
-                    Text(item.metadataLine)
-                        .font(.footnote)
-                        .foregroundStyle(.white.opacity(0.6))
-                        .padding(.top, 4)
+                        .lineLimit(1)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.horizontal, 4)
+                .opacity(showCollapsedHeader ? 1 : 0)
+                .animation(.easeInOut(duration: 0.2), value: showCollapsedHeader)
             }
-            .padding(.horizontal, 20)
-            .padding(.top, 12)
-            .padding(.bottom, 40)
+
+            ToolbarItemGroup(placement: .topBarTrailing) {
+                Button {
+                } label: {
+                    Image(systemName: "square.and.arrow.up")
+                }
+                
+                Button {
+                } label: {
+                    Image(systemName: "line.3.horizontal.decrease")
+                }
+                
+                Button {
+                } label: {
+                    Image(systemName: "ellipsis")
+                }
+            }
         }
-        .background(Color.black.ignoresSafeArea())
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbarBackground(.hidden, for: .navigationBar)
-        .toolbarColorScheme(.dark, for: .navigationBar)
+        .sheet(isPresented: $showCategorySheet) {
+            categorySheet
+                .presentationDetents([.height(280)])
+                .presentationDragIndicator(.visible)
+        }
+    }
+    
+    private var heroSection: some View {
+        ZStack(alignment: .bottomLeading) {
+            heroImage
+            
+            VStack(alignment: .leading, spacing: 10) {
+                Text(item.title.uppercased())
+                    .font(.system(size: 38, weight: .bold, design: .rounded))
+                    .foregroundStyle(.white)
+                    .lineLimit(2)
+                Text(item.category.uppercased())
+                    .font(.headline)
+                    .foregroundStyle(.white.opacity(0.9))
+                
+                Text(item.metadataLine)
+                    .font(.subheadline)
+                    .foregroundStyle(.white.opacity(0.85))
+                
+                HStack(spacing: 14) {
+                    Button {
+                        showCategorySheet = true
+                    } label: {
+                        Label("Add to Library", systemImage: "book.closed.fill")
+                            .font(.headline)
+                            .foregroundStyle(.black)
+                            .padding(.horizontal, 28)
+                            .frame(height: 52)
+                            .background(.white, in: Capsule())
+                    }
+                    
+                    Button {
+                    } label: {
+                        Image(systemName: "square.and.arrow.down.fill")
+                            .font(.title3.weight(.semibold))
+                            .foregroundStyle(.white)
+                            .frame(width: 52, height: 52)
+                            .background(.white.opacity(0.18), in: Circle())
+                    }
+                }
+            }
+            .padding(.horizontal, 24)
+            .padding(.bottom, 32)
+        }
+        .background {
+            GeometryReader { proxy in
+                Color.clear
+                    .preference(
+                        key: HeroHeaderVisibilityKey.self,
+                        value: proxy.frame(in: .named("detailScroll")).minY
+                    )
+            }
+        }
+    }
+    
+    private var heroImage: some View {
+        Image(item.image)
+            .resizable()
+            .aspectRatio(contentMode: .fill)
+            .frame(maxWidth: .infinity)
+            .frame(height: 620)
+            .overlay {
+                LinearGradient(
+                    colors: [
+                        .black.opacity(0.02),
+                        .black.opacity(0.12),
+                        .black.opacity(0.5),
+                        .black
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            }
+            .navigationTransition(.zoom(sourceID: item.id, in: animation))
+            .modifier(BackgroundExtensionModifier())
+    }
+    
+    private var overviewSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Overview")
+                .font(.title3.weight(.semibold))
+                .foregroundStyle(.white)
+            
+            Text(item.summary)
+                .font(.body)
+                .foregroundStyle(.white.opacity(0.82))
+            
+            Text(item.metadataLine)
+                .font(.footnote)
+                .foregroundStyle(.white.opacity(0.6))
+                .padding(.top, 4)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+    
+    private var chapterSection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("Chapters")
+                .font(.title3.weight(.semibold))
+                .foregroundStyle(.white)
+            
+            VStack(spacing: 0) {
+                ForEach(Array(chapters.enumerated()), id: \.offset) { index, chapter in
+                    HStack(spacing: 12) {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(chapter.title)
+                                .font(.headline)
+                                .foregroundStyle(.white)
+                            
+                            Text(chapter.date)
+                                .font(.subheadline)
+                                .foregroundStyle(.white.opacity(0.62))
+                        }
+                        
+                        Spacer()
+                        
+                        Image(systemName: "square.and.arrow.down")
+                            .font(.body.weight(.bold))
+                            .foregroundStyle(.white.opacity(0.45))
+                    }
+                    .padding(.horizontal, 18)
+                    .padding(.vertical, 16)
+                    
+                        if index < chapters.count - 1 {
+                        Divider()
+                            .overlay(.white.opacity(0.08))
+                            .padding(.leading, 18)
+                    }
+                }
+            }
+            .background(.white.opacity(0.07), in: RoundedRectangle(cornerRadius: 24, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: 24, style: .continuous)
+                    .stroke(.white.opacity(0.08), lineWidth: 1)
+            }
+        }
+    }
+
+    private var categorySheet: some View {
+        NavigationStack {
+            VStack(alignment: .leading, spacing: 0) {
+                Text("Select Categories")
+                    .font(.title3.weight(.semibold))
+                    .padding(.horizontal, 20)
+                    .padding(.top, 20)
+                    .padding(.bottom, 12)
+
+                VStack(spacing: 0) {
+                    ForEach(categories, id: \.self) { category in
+                        Button {
+                            toggleCategory(category)
+                        } label: {
+                            HStack(spacing: 12) {
+                                Image(systemName: selectedCategories.contains(category) ? "checkmark.square.fill" : "square")
+                                    .font(.title3)
+                                    .foregroundStyle(selectedCategories.contains(category) ? Color.accentColor : .secondary)
+
+                                Text(category)
+                                    .font(.body)
+                                    .foregroundStyle(.primary)
+
+                                Spacer()
+                            }
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 16)
+                        }
+                        .buttonStyle(.plain)
+
+                        if category != categories.last {
+                            Divider()
+                                .padding(.leading, 20)
+                        }
+                    }
+                }
+
+                Spacer(minLength: 16)
+
+                Button {
+                    showCategorySheet = false
+                } label: {
+                    Text("Add to Library")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 52)
+                }
+                .buttonStyle(.borderedProminent)
+                .padding(.horizontal, 20)
+                .padding(.bottom, 20)
+            }
+        }
+    }
+
+    private func toggleCategory(_ category: String) {
+        if selectedCategories.contains(category) {
+            selectedCategories.remove(category)
+        } else {
+            selectedCategories.insert(category)
+        }
+    }
+}
+
+private struct HeroHeaderVisibilityKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = nextValue()
+    }
+}
+
+private struct BackgroundExtensionModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(iOS 18.0, *) {
+            content.backgroundExtensionEffect()
+        } else {
+            content
+        }
     }
 }
 

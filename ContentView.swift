@@ -124,7 +124,7 @@ struct ContentView: View {
                         .padding(.vertical, 20)
 //                        .frame(height: 1000)
                     }
-                    .navigationTitle("Keihatsu")
+                    .navigationTitle("Explore")
                     .navigationBarTitleDisplayMode(.automatic)
                     .toolbar {
                         ToolbarItem(placement: .topBarTrailing) {
@@ -154,19 +154,13 @@ struct ContentView: View {
             
             Tab.init("Library", systemImage: "books.vertical"){
                 NavigationStack {
-                    List{
-                        
-                    }
-                    .navigationTitle("Library")
+                    LibraryView(animation: animation)
                 }
             }
             
             Tab.init("History", systemImage: "clock.arrow.circlepath"){
                 NavigationStack {
-                    List{
-                        
-                    }
-                    .navigationTitle("History")
+                    HistoryView()
                 }
             }
             
@@ -196,9 +190,11 @@ struct ContentView: View {
     @ViewBuilder
     func PlayerInfo(_ size : CGSize) -> some View{
         HStack(spacing: 12){
-            RoundedRectangle(cornerRadius: size.height / 4)
-                .fill(.blue.gradient)
+            Image(images.first?.image ?? "Image4")
+                .resizable()
+                .aspectRatio(contentMode: .fill)
                 .frame(width: size.width, height: size.height)
+                .clipShape(RoundedRectangle(cornerRadius: size.height / 4, style: .continuous))
             
             VStack(alignment: .leading, spacing: 6){
                 Text("Pick Me Up: Infinite Gacha")
@@ -231,7 +227,7 @@ struct ContentView: View {
             Button {
                 
             } label: {
-                Image(systemName: "forward.fill")
+                Image(systemName: "play.fill")
                     .contentShape(.rect)
             }
         }
