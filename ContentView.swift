@@ -11,18 +11,60 @@ struct ContentView: View {
     @Namespace private var animation
     @State private var showMenu: Bool = false
     @State private var searchText: String = ""
+    @State private var expandMiniPlayer: Bool = false
     
     var body: some View {
         
         Group {
             if #available(iOS 26, *) {
                 NativeTabView()
+                    .tabBarMinimizeBehavior(.onScrollDown)
                     .tabViewBottomAccessory{
                         MiniPlayerView()
+                            .matchedTransitionSource(id: "MINIPLAYER", in: animation)
+                            .onTapGesture {
+                                expandMiniPlayer.toggle()
+                            }
                     }
             } else {
                 NativeTabView()
             }
+        }
+        .fullScreenCover(isPresented: $expandMiniPlayer){
+            ScrollView{
+                
+            }
+            .safeAreaInset(edge: .top, spacing: 0){
+                VStack(spacing: 10){
+                    //Drag indicator mimic
+                    Capsule()
+                        .fill(.primary.secondary)
+                        .frame(width: 35, height: 3)
+                    
+                    HStack(spacing: 0){
+                        PlayerInfo(.init(width: 80, height: 80))
+                        
+                        Spacer(minLength: 0)
+                        
+                        // Expanded Actions
+                        Group {
+                            Button("", systemImage: "star.circle.fill"){
+                                
+                            }
+                            Button("", systemImage: "ellipsis.circle.fill"){
+                                
+                            }
+                        }
+                        .font(.title)
+                        .foregroundStyle(Color.primary, Color.primary.opacity(0.1))
+                    }
+                    .padding(.horizontal, 15)
+                }
+                .navigationTransition(.zoom(sourceID: "MINIPLAYER", in: animation))
+            }
+            //To avoid transparency
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(.background)
         }
     }
     
@@ -110,7 +152,7 @@ struct ContentView: View {
                 Text("Pick Me Up: Infinite Gacha")
                     .font(.callout)
                 
-                Text("Brent Grey")
+                Text("Chapter 182")
                     .font(.caption2)
                     .foregroundStyle(.gray)
             }
@@ -129,7 +171,7 @@ struct ContentView: View {
             Button {
                 
             } label: {
-                Image(systemName: "book.pages.fill")
+                Image(systemName: "book.fill")
                     .contentShape(.rect)
             }
             .padding(.trailing, 10)
