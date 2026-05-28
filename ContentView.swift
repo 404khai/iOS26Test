@@ -12,10 +12,10 @@ struct ContentView: View {
     @State private var showMenu: Bool = false
     @State private var searchText: String = ""
     @State private var expandMiniPlayer: Bool = false
+    @State private var activeID: UUID?
+    @State private var selectedType: CarouselType = .type1
     
     var body: some View {
-        
-        
         Group {
             if #available(iOS 26, *) {
                 NativeTabView()
@@ -74,8 +74,26 @@ struct ContentView: View {
         TabView{
             Tab.init("Home", systemImage: "house.fill"){
                 NavigationStack {
-                    List {
-                        
+                    ScrollView {
+                        VStack(spacing: 36){
+                            let s = selectedType.settings
+                            
+                            CustomCarousel(config: .init(hasOpacity: s.hasOpacity, hasScale: s.hasScale, cardWidth: s.cardWidth, minCardWidth: s.minCardWidth), selection: $activeID, data: images) { item in
+                                Image(item.image)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                            }
+                            .frame(height: 200)
+                            
+                            Picker("Carousel Type", selection: $selectedType){
+                                ForEach(CarouselType.allCases, id: \.self){ type in
+                                    Text(type.title).tag(type)
+                                }
+                            }
+                            .pickerStyle(.segmented)
+                        }
+                        .padding(.horizontal)
+                        .padding(.vertical, 20)
                     }
                     .navigationTitle("Keihatsu")
                     .navigationBarTitleDisplayMode(.automatic)
@@ -186,10 +204,31 @@ struct ContentView: View {
         }
         .padding(.horizontal, 15)
     }
+    
+    enum CarouselType: CaseIterable, Hashable {
+        case type1, type2, type3, type4
+        
+        var title: String {
+            switch self{
+            case .type1: return "Basic"
+            case .type2: return "Fade"
+            case .type3: return "Zoom"
+            case .type4: return "Cinematic"
+            }
+        }
+        
+        var settings: (hasOpacity: Bool, hasScale: Bool, cardWidth: CGFloat, minCardWidth: CGFloat){
+            switch self{
+            case .type1: return (false, false, 200,30)
+            case .type2: return (true, false, 200,30)
+            case .type3: return (false, true, 200,30)
+            case .type4: return (true, true, 200,30)
+            }
+        }
+    }
 }
 
 #Preview {
     ContentView()
 }
-
 

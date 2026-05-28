@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CustomCarousel<Content: View, Data: RandomAccessCollection>: View where Data.Element: Identifiable {
-    var config: Config
+    var config: Config = .init()
     @Binding var selection: Data.Element.ID?
     var data: Data
     @ViewBuilder var content: (Data.Element) -> Content
@@ -18,11 +18,16 @@ struct CustomCarousel<Content: View, Data: RandomAccessCollection>: View where D
             let size = $0.size
             ScrollView(.horizontal){
                 HStack(spacing: config .spacing){
-                    ForEach (data){ item in
+                    ForEach(data){ item in
                         ItemView(item)
                     }
                 }
+                .scrollTargetLayout()
             }
+            .safeAreaPadding(.horizontal, max((size.width - config.cardWidth) / 2, 0))
+            .scrollPosition(id: $selection)
+            .scrollTargetBehavior(.viewAligned(limitBehavior: .always))
+            .scrollIndicators(.hidden)
         }
     }
     
@@ -61,7 +66,7 @@ struct CustomCarousel<Content: View, Data: RandomAccessCollection>: View where D
     
     struct Config{
         var hasOpacity: Bool = false
-        var opacityValue = CGFloat = 0.4
+        var opacityValue: CGFloat = 0.4
         var hasScale: Bool = false
         var scaleValue: CGFloat = 0.2
         var cardWidth: CGFloat = 10
@@ -72,5 +77,19 @@ struct CustomCarousel<Content: View, Data: RandomAccessCollection>: View where D
 }
 
 #Preview {
-    CustomCarousel()
+    CarouselPreview()
+}
+
+private struct CarouselPreview: View {
+    @State private var selection: UUID?
+
+    var body: some View {
+        CustomCarousel(config: .init(), selection: $selection, data: images) { item in
+            Image(item.image)
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+        }
+        .frame(height: 200)
+        .padding(.horizontal)
+    }
 }

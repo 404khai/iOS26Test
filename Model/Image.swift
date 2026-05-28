@@ -12,4 +12,4 @@ struct ImageModel: Identifiable{
     var image: String
 }
 
-var images: [ImageModel] = (1...6).compactMap({ImageModel(image: "Image \($0)")})
+var images: [ImageModel] = (1...6).map { ImageModel(image: "Image\($0)") }
