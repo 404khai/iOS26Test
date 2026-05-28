@@ -13,7 +13,7 @@ struct ContentView: View {
     @State private var searchText: String = ""
     @State private var expandMiniPlayer: Bool = false
     @State private var activeID: UUID?
-    @State private var selectedType: CarouselType = .type1
+    @State private var selectedType: CarouselType = .type3
     
     var body: some View {
         Group {
@@ -79,21 +79,50 @@ struct ContentView: View {
                             let s = selectedType.settings
                             
                             CustomCarousel(config: .init(hasOpacity: s.hasOpacity, hasScale: s.hasScale, cardWidth: s.cardWidth, minCardWidth: s.minCardWidth), selection: $activeID, data: images) { item in
-                                Image(item.image)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fill)
-                            }
-                            .frame(height: 200)
-                            
-                            Picker("Carousel Type", selection: $selectedType){
-                                ForEach(CarouselType.allCases, id: \.self){ type in
-                                    Text(type.title).tag(type)
+                                NavigationLink(value: item) {
+                                    Image(item.image)
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fill)
+                                        .overlay(alignment: .bottomLeading) {
+                                            LinearGradient(
+                                                colors: [.clear, .black.opacity(0.7)],
+                                                startPoint: .top,
+                                                endPoint: .bottom
+                                            )
+                                            .overlay(alignment: .bottomLeading) {
+                                                VStack(alignment: .leading, spacing: 4) {
+                                                    Text(item.title)
+                                                        .font(.headline)
+                                                        .fontWeight(.semibold)
+                                                        .foregroundStyle(.white)
+                                                        .lineLimit(2)
+                                                    
+                                                    Text(item.metadataLine)
+                                                        .font(.caption)
+                                                        .foregroundStyle(.white.opacity(0.85))
+                                                        .lineLimit(1)
+                                                }
+                                                .padding(16)
+                                            }
+                                        }
+                                        .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
+                                        .contentShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
                                 }
+                                .buttonStyle(.plain)
+                                .matchedTransitionSource(id: item.id, in: animation)
                             }
-                            .pickerStyle(.segmented)
+                            .frame(height: 250)
+                            
+//                            Picker("Carousel Type", selection: $selectedType){
+//                                ForEach(CarouselType.allCases, id: \.self){ type in
+//                                    Text(type.title).tag(type)
+//                                }
+//                            }
+//                            .pickerStyle(.segmented)
                         }
                         .padding(.horizontal)
                         .padding(.vertical, 20)
+//                        .frame(height: 1000)
                     }
                     .navigationTitle("Keihatsu")
                     .navigationBarTitleDisplayMode(.automatic)
@@ -114,6 +143,10 @@ struct ContentView: View {
                     .sheet(isPresented: $showMenu) {
                         Text("Account Sheet")
                             .navigationTransition(.zoom(sourceID: "Account", in: animation))
+                
+                    }
+                    .navigationDestination(for: ImageModel.self) { item in
+                        CarouselDetailView(item: item, animation: animation)
                     }
                 }
                 
@@ -231,4 +264,3 @@ struct ContentView: View {
 #Preview {
     ContentView()
 }
-
