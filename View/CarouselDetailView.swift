@@ -10,8 +10,16 @@ struct CarouselDetailView: View {
     @State private var dimmedChapters: Set<Int> = []
     
     private var chapters: [ChapterEntry] {
-        (1...10).map { index in
-            ChapterEntry(id: index, title: "Chapter \(index)", date: "\(13 + index)/5/26")
+        if item.title == "Ordeal" {
+            return [
+                ChapterEntry(id: 139, title: "Chapter 139", date: "14/5/26", resourcePrefix: "ordeal_ch139_"),
+                ChapterEntry(id: 156, title: "Chapter 156", date: "15/5/26", resourcePrefix: "ordeal_ch156_"),
+                ChapterEntry(id: 158, title: "Chapter 158", date: "16/5/26", resourcePrefix: "ordeal_ch158_")
+            ]
+        }
+
+        return (1...10).map { index in
+            ChapterEntry(id: index, title: "Chapter \(index)", date: "\(13 + index)/5/26", resourcePrefix: nil)
         }
     }
 
@@ -269,29 +277,34 @@ struct CarouselDetailView: View {
         let isBookmarked = bookmarkedChapters.contains(chapter.id)
         let isDimmed = dimmedChapters.contains(chapter.id)
 
-        HStack(spacing: 12) {
-            Image(systemName: isBookmarked ? "bookmark.fill" : "bookmark")
-                .font(.body.weight(.semibold))
-                .foregroundStyle(isBookmarked ? .yellow : .white.opacity(0.45))
+        NavigationLink {
+            MangaReaderView(item: item, chapters: chapters, initialChapterID: chapter.id)
+        } label: {
+            HStack(spacing: 12) {
+                Image(systemName: isBookmarked ? "bookmark.fill" : "bookmark")
+                    .font(.body.weight(.semibold))
+                    .foregroundStyle(isBookmarked ? .yellow : .white.opacity(0.45))
 
-            VStack(alignment: .leading, spacing: 4) {
-                Text(chapter.title)
-                    .font(.headline)
-                    .foregroundStyle(isDimmed ? .white.opacity(0.45) : .white)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(chapter.title)
+                        .font(.headline)
+                        .foregroundStyle(isDimmed ? .white.opacity(0.45) : .white)
 
-                Text(chapter.date)
-                    .font(.subheadline)
-                    .foregroundStyle(isDimmed ? .white.opacity(0.35) : .white.opacity(0.62))
+                    Text(chapter.date)
+                        .font(.subheadline)
+                        .foregroundStyle(isDimmed ? .white.opacity(0.35) : .white.opacity(0.62))
+                }
+
+                Spacer()
+
+                Image(systemName: "arrow.down.circle")
+                    .font(.body.weight(.bold))
+                    .foregroundStyle(.white.opacity(0.45))
             }
-
-            Spacer()
-
-            Image(systemName: "arrow.down.circle")
-                .font(.body.weight(.bold))
-                .foregroundStyle(.white.opacity(0.45))
+            .padding(.horizontal, 18)
+            .padding(.vertical, 16)
         }
-        .padding(.horizontal, 18)
-        .padding(.vertical, 16)
+        .buttonStyle(.plain)
         .swipeActions(edge: .trailing, allowsFullSwipe: true) {
             Button {
                 toggleBookmark(for: chapter.id)
@@ -327,10 +340,11 @@ struct CarouselDetailView: View {
     }
 }
 
-private struct ChapterEntry: Identifiable {
+struct ChapterEntry: Identifiable {
     let id: Int
     let title: String
     let date: String
+    let resourcePrefix: String?
 }
 
 private struct HeroHeaderVisibilityKey: PreferenceKey {

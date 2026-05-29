@@ -28,8 +28,8 @@ struct ContentView: View {
             UpdateSection(
                 title: "Tomorrow",
                 items: [
-                    UpdateEntry(item: images[1], chapterLine: "Chapter 85, 86...", trailingIcon: "clock"),
-                    UpdateEntry(item: images[5], chapterLine: "Chapter 92, 93...", trailingIcon: "clock")
+                    UpdateEntry(item: images[1], chapterLine: "Chapter 85, 86...", trailingIcon: "calendar.badge.clock"),
+                    UpdateEntry(item: images[5], chapterLine: "Chapter 92, 93...", trailingIcon: "calendar.badge.clock")
                 ]
             )
         ]
@@ -137,12 +137,18 @@ struct ContentView: View {
                                 HStack {
                                     Text("Updates")
                                         .font(.title3.weight(.semibold))
-
+                                    
                                     Spacer()
-
-                                    Image(systemName: "chevron.right")
-                                        .font(.footnote.weight(.semibold))
-                                        .foregroundStyle(.secondary)
+                                    
+                                    Button {
+                                        
+                                    } label: {
+                                        Text("See More")
+                                    }
+                                    .buttonStyle(.borderedProminent)
+//                                    Image(systemName: "chevron.right.circle")
+//                                        .font(.title2.weight(.semibold))
+//                                        .foregroundStyle(.secondary)
                                 }
 
                                 ForEach(updateSections) { section in
@@ -195,13 +201,13 @@ struct ContentView: View {
                     .navigationBarTitleDisplayMode(.automatic)
                     .toolbar {
                         ToolbarItem(placement: .topBarTrailing) {
-                            Button("Notifications", systemImage: "bell") {
+                            Button("Notifications", systemImage: "bell.fill") {
                                 
                             }
                         }
                         
                         ToolbarItem(placement: .topBarTrailing) {
-                            Button("Account", systemImage: "person") {
+                            Button("Account", systemImage: "person.fill") {
                                 showMenu.toggle()
                             }
                         }
@@ -233,10 +239,7 @@ struct ContentView: View {
             
             Tab.init("Plugins", systemImage: "puzzlepiece.extension"){
                 NavigationStack {
-                    List{
-                        
-                    }
-                    .navigationTitle("Plugins")
+                    PluginsView()
                 }
             }
             
@@ -291,12 +294,6 @@ struct ContentView: View {
             }
             .padding(.trailing, 10)
             
-            Button {
-                
-            } label: {
-                Image(systemName: "play.fill")
-                    .contentShape(.rect)
-            }
         }
         .padding(.horizontal, 15)
     }
