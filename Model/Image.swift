@@ -19,7 +19,7 @@ struct ImageModel: Identifiable, Hashable {
 var images: [ImageModel] = [
     ImageModel(
         image: "Image1",
-        title: "Mercenary Enrollment",
+        title: "The Regressed Mercenary's Machinations",
         category: "Manhwa",
         metadataLine: "Action • School • Thriller",
         summary: "A former child soldier returns to civilian life and tries to protect the only family he has left."
@@ -54,7 +54,7 @@ var images: [ImageModel] = [
     ),
     ImageModel(
         image: "Image6",
-        title: "Surviving the Game",
+        title: "Superhuman Battlefield",
         category: "Thriller",
         metadataLine: "Action • Dark Fantasy • Survival",
         summary: "Each choice has consequences as the protagonist faces escalating dangers in a brutal world."

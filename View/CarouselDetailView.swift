@@ -6,10 +6,12 @@ struct CarouselDetailView: View {
     @State private var showCategorySheet: Bool = false
     @State private var selectedCategories: Set<String> = ["DEFAULT"]
     @State private var showCollapsedHeader: Bool = false
+    @State private var bookmarkedChapters: Set<Int> = []
+    @State private var dimmedChapters: Set<Int> = []
     
-    private var chapters: [(title: String, date: String)] {
+    private var chapters: [ChapterEntry] {
         (1...10).map { index in
-            ("Chapter \(index)", "\(13 + index)/5/26")
+            ChapterEntry(id: index, title: "Chapter \(index)", date: "\(13 + index)/5/26")
         }
     }
 
@@ -37,7 +39,7 @@ struct CarouselDetailView: View {
         .toolbarBackground(showCollapsedHeader ? .visible : .hidden, for: .navigationBar)
         .toolbarColorScheme(.dark, for: .navigationBar)
         .onPreferenceChange(HeroHeaderVisibilityKey.self) { minY in
-            showCollapsedHeader = minY < -50
+            showCollapsedHeader = minY < -10
         }
         .toolbar {
             ToolbarItem(placement: .principal) {
@@ -113,7 +115,7 @@ struct CarouselDetailView: View {
                     
                     Button {
                     } label: {
-                        Image(systemName: "square.and.arrow.down.fill")
+                        Image(systemName: "arrow.down.circle.fill")
                             .font(.title3.weight(.semibold))
                             .foregroundStyle(.white)
                             .frame(width: 52, height: 52)
@@ -182,28 +184,10 @@ struct CarouselDetailView: View {
                 .foregroundStyle(.white)
             
             VStack(spacing: 0) {
-                ForEach(Array(chapters.enumerated()), id: \.offset) { index, chapter in
-                    HStack(spacing: 12) {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(chapter.title)
-                                .font(.headline)
-                                .foregroundStyle(.white)
-                            
-                            Text(chapter.date)
-                                .font(.subheadline)
-                                .foregroundStyle(.white.opacity(0.62))
-                        }
-                        
-                        Spacer()
-                        
-                        Image(systemName: "square.and.arrow.down")
-                            .font(.body.weight(.bold))
-                            .foregroundStyle(.white.opacity(0.45))
-                    }
-                    .padding(.horizontal, 18)
-                    .padding(.vertical, 16)
-                    
-                        if index < chapters.count - 1 {
+                ForEach(chapters) { chapter in
+                    chapterRow(chapter)
+
+                    if chapter.id < chapters.count {
                         Divider()
                             .overlay(.white.opacity(0.08))
                             .padding(.leading, 18)
@@ -279,6 +263,74 @@ struct CarouselDetailView: View {
             selectedCategories.insert(category)
         }
     }
+
+    @ViewBuilder
+    private func chapterRow(_ chapter: ChapterEntry) -> some View {
+        let isBookmarked = bookmarkedChapters.contains(chapter.id)
+        let isDimmed = dimmedChapters.contains(chapter.id)
+
+        HStack(spacing: 12) {
+            Image(systemName: isBookmarked ? "bookmark.fill" : "bookmark")
+                .font(.body.weight(.semibold))
+                .foregroundStyle(isBookmarked ? .yellow : .white.opacity(0.45))
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(chapter.title)
+                    .font(.headline)
+                    .foregroundStyle(isDimmed ? .white.opacity(0.45) : .white)
+
+                Text(chapter.date)
+                    .font(.subheadline)
+                    .foregroundStyle(isDimmed ? .white.opacity(0.35) : .white.opacity(0.62))
+            }
+
+            Spacer()
+
+            Image(systemName: "arrow.down.circle")
+                .font(.body.weight(.bold))
+                .foregroundStyle(.white.opacity(0.45))
+        }
+        .padding(.horizontal, 18)
+        .padding(.vertical, 16)
+        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+            Button {
+                toggleBookmark(for: chapter.id)
+            } label: {
+                Label("Bookmark", systemImage: isBookmarked ? "bookmark.slash" : "bookmark")
+            }
+            .tint(.yellow)
+        }
+        .swipeActions(edge: .leading, allowsFullSwipe: true) {
+            Button {
+                toggleDim(for: chapter.id)
+            } label: {
+                Label("Shade", systemImage: "circle.lefthalf.filled")
+            }
+            .tint(.gray)
+        }
+    }
+
+    private func toggleBookmark(for id: Int) {
+        if bookmarkedChapters.contains(id) {
+            bookmarkedChapters.remove(id)
+        } else {
+            bookmarkedChapters.insert(id)
+        }
+    }
+
+    private func toggleDim(for id: Int) {
+        if dimmedChapters.contains(id) {
+            dimmedChapters.remove(id)
+        } else {
+            dimmedChapters.insert(id)
+        }
+    }
+}
+
+private struct ChapterEntry: Identifiable {
+    let id: Int
+    let title: String
+    let date: String
 }
 
 private struct HeroHeaderVisibilityKey: PreferenceKey {

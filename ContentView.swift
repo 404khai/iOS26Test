@@ -14,6 +14,26 @@ struct ContentView: View {
     @State private var expandMiniPlayer: Bool = false
     @State private var activeID: UUID?
     @State private var selectedType: CarouselType = .type3
+
+    private var updateSections: [UpdateSection] {
+        [
+            UpdateSection(
+                title: "Today",
+                items: [
+                    UpdateEntry(item: images[4], chapterLine: "Chapter 132, 135...", trailingIcon: "arrow.down.circle"),
+                    UpdateEntry(item: images[0], chapterLine: "Chapter 110, 111...", trailingIcon: "arrow.down.circle"),
+                    UpdateEntry(item: images[2], chapterLine: "Chapter 57, 58...", trailingIcon: "arrow.down.circle")
+                ]
+            ),
+            UpdateSection(
+                title: "Tomorrow",
+                items: [
+                    UpdateEntry(item: images[1], chapterLine: "Chapter 85, 86...", trailingIcon: "clock"),
+                    UpdateEntry(item: images[5], chapterLine: "Chapter 92, 93...", trailingIcon: "clock")
+                ]
+            )
+        ]
+    }
     
     var body: some View {
         Group {
@@ -112,17 +132,64 @@ struct ContentView: View {
                                 .matchedTransitionSource(id: item.id, in: animation)
                             }
                             .frame(height: 250)
-                            
-//                            Picker("Carousel Type", selection: $selectedType){
-//                                ForEach(CarouselType.allCases, id: \.self){ type in
-//                                    Text(type.title).tag(type)
-//                                }
-//                            }
-//                            .pickerStyle(.segmented)
+
+                            VStack(alignment: .leading, spacing: 20) {
+                                HStack {
+                                    Text("Updates")
+                                        .font(.title3.weight(.semibold))
+
+                                    Spacer()
+
+                                    Image(systemName: "chevron.right")
+                                        .font(.footnote.weight(.semibold))
+                                        .foregroundStyle(.secondary)
+                                }
+
+                                ForEach(updateSections) { section in
+                                    VStack(alignment: .leading, spacing: 12) {
+                                        Text(section.title)
+                                            .font(.headline)
+                                            .foregroundStyle(.secondary)
+
+                                        VStack(spacing: 12) {
+                                            ForEach(section.items) { entry in
+                                                NavigationLink(value: entry.item) {
+                                                    HStack(spacing: 12) {
+                                                        Image(entry.item.image)
+                                                            .resizable()
+                                                            .aspectRatio(contentMode: .fill)
+                                                            .frame(width: 54, height: 72)
+                                                            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+
+                                                        VStack(alignment: .leading, spacing: 4) {
+                                                            Text(entry.item.title)
+                                                                .font(.headline)
+                                                                .foregroundStyle(.primary)
+                                                                .lineLimit(1)
+
+                                                            Text(entry.chapterLine)
+                                                                .font(.subheadline)
+                                                                .foregroundStyle(.secondary)
+                                                                .lineLimit(1)
+                                                        }
+
+                                                        Spacer(minLength: 0)
+
+                                                        Image(systemName: entry.trailingIcon)
+                                                            .font(.title3.weight(.semibold))
+                                                            .foregroundStyle(.secondary)
+                                                    }
+                                                    .padding(.vertical, 4)
+                                                }
+                                                .buttonStyle(.plain)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
                         .padding(.horizontal)
                         .padding(.vertical, 20)
-//                        .frame(height: 1000)
                     }
                     .navigationTitle("Explore")
                     .navigationBarTitleDisplayMode(.automatic)
@@ -197,10 +264,10 @@ struct ContentView: View {
                 .clipShape(RoundedRectangle(cornerRadius: size.height / 4, style: .continuous))
             
             VStack(alignment: .leading, spacing: 6){
-                Text("Pick Me Up: Infinite Gacha")
+                Text("The Regressed Mercenary's Machinations")
                     .font(.callout)
                 
-                Text("Chapter 182")
+                Text("Chapter 52")
                     .font(.caption2)
                     .foregroundStyle(.gray)
             }
@@ -254,6 +321,19 @@ struct ContentView: View {
             case .type4: return (true, true, 200,30)
             }
         }
+    }
+
+    struct UpdateSection: Identifiable {
+        let id = UUID()
+        let title: String
+        let items: [UpdateEntry]
+    }
+
+    struct UpdateEntry: Identifiable {
+        let id = UUID()
+        let item: ImageModel
+        let chapterLine: String
+        let trailingIcon: String
     }
 }
 
