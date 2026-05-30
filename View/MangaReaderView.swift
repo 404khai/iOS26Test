@@ -117,8 +117,8 @@ struct MangaReaderView: View {
             .sheet(isPresented: $showComments) {
                 ReaderCommentsSheet()
                     .presentationDetents([.medium, .large])
-                    .presentationDragIndicator(.hidden)
-                    .presentationBackground(.regularMaterial)
+                    .presentationDragIndicator(.visible)
+//                    .presentationBackground(.regularMaterial)
             }
         }
     }
@@ -134,9 +134,10 @@ struct MangaReaderView: View {
                     Image(systemName: "backward.end.fill")
                         .font(.title2)
                         .frame(width: 54, height: 54)
-                        .background(.ultraThinMaterial, in: Circle())
+//                        .background(.ultraThinMaterial, in: Circle())
                 }
                 .disabled(currentChapterIndex == 0)
+                .glassEffect(.regular.interactive(), in: .circle)
 
                 HStack(spacing: 12) {
                     Text("\(max(currentPageIndex + 1, 1))")
@@ -169,7 +170,8 @@ struct MangaReaderView: View {
                 }
                 .padding(.horizontal, 14)
                 .frame(height: 54)
-                .background(.ultraThinMaterial, in: Capsule())
+//                .background(.ultraThinMaterial, in: Capsule())
+                .glassEffect(.regular.interactive(), in: .capsule)
 
                 Button {
                     if currentChapterIndex < chapters.count - 1 {
@@ -179,16 +181,17 @@ struct MangaReaderView: View {
                     Image(systemName: "forward.end.fill")
                         .font(.title2)
                         .frame(width: 54, height: 54)
-                        .background(.ultraThinMaterial, in: Circle())
+//                        .background(.ultraThinMaterial, in: Circle())
                 }
                 .disabled(currentChapterIndex >= chapters.count - 1)
+                .glassEffect(.regular.interactive(), in: .circle)
             }
             .foregroundStyle(.white)
         }
         .padding(.horizontal, 16)
         .padding(.top, 8)
         .padding(.bottom, 12)
-        .background(.black.opacity(0.88))
+//        .background(.black.opacity(0.88))
     }
 
     private func floatingAction(systemName: String, action: @escaping () -> Void) -> some View {
@@ -197,8 +200,10 @@ struct MangaReaderView: View {
                 .font(.title2)
                 .foregroundStyle(.white)
                 .frame(width: 56, height: 56)
-                .background(.black.opacity(0.82), in: Circle())
+//                .background(.glassEffect)
+//                .background(.black.opacity(0.82), in: Circle())
         }
+        .glassEffect(.regular.interactive(), in: .circle)
     }
 
     private func loadPages() {
@@ -254,11 +259,7 @@ private struct ReaderCommentsSheet: View {
     var body: some View {
         VStack(spacing: 0) {
             VStack(spacing: 14) {
-                Capsule()
-                    .fill(.secondary.opacity(0.35))
-                    .frame(width: 70, height: 6)
-                    .padding(.top, 8)
-
+                
                 ZStack {
                     HStack {
                         Button {
@@ -266,10 +267,11 @@ private struct ReaderCommentsSheet: View {
                         } label: {
                             Image(systemName: "xmark")
                                 .font(.title2.weight(.semibold))
-                                .foregroundStyle(.primary)
-                                .frame(width: 56, height: 56)
-                                .background(.regularMaterial, in: Circle())
+                                .foregroundStyle(.white)
+                                .frame(width: 50, height: 50)
+//                                .background(.regularMaterial, in: Circle())
                         }
+                        .glassEffect(.regular.interactive(), in: .circle)
 
                         Spacer()
 
@@ -277,10 +279,11 @@ private struct ReaderCommentsSheet: View {
                         } label: {
                             Image(systemName: "line.3.horizontal.decrease")
                                 .font(.title2.weight(.semibold))
-                                .foregroundStyle(.primary)
-                                .frame(width: 56, height: 56)
-                                .background(.regularMaterial, in: Circle())
+                                .foregroundStyle(.white)
+                                .frame(width: 50, height: 50)
+//                                .background(.regularMaterial, in: Circle())
                         }
+                        .glassEffect(.regular.interactive(), in: .circle)
                     }
 
                     Text("Comments (7)")
@@ -290,6 +293,7 @@ private struct ReaderCommentsSheet: View {
                 .padding(.horizontal, 16)
             }
             .padding(.bottom, 12)
+            .padding(.top, 12)
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
@@ -307,29 +311,35 @@ private struct ReaderCommentsSheet: View {
             .scrollIndicators(.visible)
             .safeAreaInset(edge: .bottom, spacing: 0) {
                 HStack(spacing: 12) {
-                    Image("Image1")
+
+                    // Avatar (no background)
+                    Image("Image4")
                         .resizable()
                         .aspectRatio(contentMode: .fill)
                         .frame(width: 38, height: 38)
                         .clipShape(Circle())
 
+                    // Input Area
                     HStack {
                         TextField("Add comments...", text: $commentText)
                             .textFieldStyle(.plain)
-                            .foregroundStyle(.primary)
 
-                        Image(systemName: "photo")
-                            .font(.title3)
-                            .foregroundStyle(.secondary)
+                        Button {
+
+                        } label: {
+                            Image(systemName: "photo")
+                                .font(.title3)
+                                .foregroundStyle(.secondary)
+                        }
                     }
                     .padding(.horizontal, 16)
                     .frame(height: 50)
-                    .background(.regularMaterial, in: Capsule())
+                    .glassEffect(.regular.interactive(), in: .capsule)
                 }
                 .padding(.horizontal, 16)
                 .padding(.top, 12)
                 .padding(.bottom, 10)
-                .background(.ultraThinMaterial)
+                .background(.regularMaterial)
             }
         }
     }

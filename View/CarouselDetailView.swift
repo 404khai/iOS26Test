@@ -43,20 +43,20 @@ struct CarouselDetailView: View {
         .background(Color.black.ignoresSafeArea())
         .ignoresSafeArea(edges: .top)
         .navigationBarTitleDisplayMode(.inline)
-        .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
+//        .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
         .toolbarBackground(showCollapsedHeader ? .visible : .hidden, for: .navigationBar)
         .toolbarColorScheme(.dark, for: .navigationBar)
         .onPreferenceChange(HeroHeaderVisibilityKey.self) { minY in
-            showCollapsedHeader = minY < -10
+            showCollapsedHeader = minY < 50
         }
         .toolbar {
             ToolbarItem(placement: .principal) {
                 HStack(spacing: 10) {
-                    Image(item.image)
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: 30, height: 30)
-                        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+//                    Image(item.image)
+//                        .resizable()
+//                        .aspectRatio(contentMode: .fill)
+//                        .frame(width: 30, height: 30)
+//                        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
 
                     Text(item.title)
                         .font(.headline)
@@ -113,13 +113,14 @@ struct CarouselDetailView: View {
                     Button {
                         showCategorySheet = true
                     } label: {
-                        Label("Add to Library", systemImage: "book.closed.fill")
+                        Label("Added to Library", systemImage: "book.closed.fill")
                             .font(.headline)
                             .foregroundStyle(.black)
                             .padding(.horizontal, 28)
                             .frame(height: 52)
                             .background(.white, in: Capsule())
                     }
+                    .glassEffect(.regular, in: .capsule)
                     
                     Button {
                     } label: {
@@ -127,8 +128,9 @@ struct CarouselDetailView: View {
                             .font(.title3.weight(.semibold))
                             .foregroundStyle(.white)
                             .frame(width: 52, height: 52)
-                            .background(.white.opacity(0.18), in: Circle())
+//                            .background(.white.opacity(0.18), in: Circle())
                     }
+                    .glassEffect(.regular.interactive(), in: .circle)
                 }
             }
             .padding(.horizontal, 24)
@@ -298,8 +300,11 @@ struct CarouselDetailView: View {
                 Spacer()
 
                 Image(systemName: "arrow.down.circle")
-                    .font(.body.weight(.bold))
-                    .foregroundStyle(.white.opacity(0.45))
+                    .font(.title3.weight(.semibold))
+//                    .font(.system(size: 20, weight: .bold))
+                    .foregroundStyle(.secondary)
+//                    .font(.body.weight(.bold))
+//                    .foregroundStyle(.white.opacity(0.45))
             }
             .padding(.horizontal, 18)
             .padding(.vertical, 16)
