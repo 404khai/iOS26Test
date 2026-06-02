@@ -204,6 +204,22 @@ struct CarouselDetailView: View {
                     }
                 }
             }
+            
+//            List{
+//                ForEach(tasks) { task in
+//                    HStack{
+//                        Text(task.title)
+//                            .strikethrough(task.isCompleted)
+//                        Image(systemName: task.isCompleted ?
+//                            "checkmark.seal.fill": "circlebadge")
+//                        }
+//                            .onTapGesture {
+//                                toggleTask(task)
+//                            }
+//                    }
+//                    .onDelete(perform: deleteTask)
+//            }
+            
             .background(.white.opacity(0.07), in: RoundedRectangle(cornerRadius: 24, style: .continuous))
             .overlay {
                 RoundedRectangle(cornerRadius: 24, style: .continuous)
@@ -327,7 +343,14 @@ struct CarouselDetailView: View {
             .tint(.gray)
         }
     }
-
+    
+    // demo task deletion by swiping left
+//    private func deleteTask(at offsets:IndexSet){
+//        for index in offsets{
+//            modelContext.delete(tasks[index])
+//        }
+//    }
+    
     private func toggleBookmark(for id: Int) {
         if bookmarkedChapters.contains(id) {
             bookmarkedChapters.remove(id)

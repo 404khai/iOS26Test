@@ -40,13 +40,13 @@ struct ContentView: View {
             if #available(iOS 26, *) {
                 NativeTabView()
                     .tabBarMinimizeBehavior(.onScrollDown)
-                    .tabViewBottomAccessory{
-                        MiniPlayerView()
-                            .matchedTransitionSource(id: "MINIPLAYER", in: animation)
-                            .onTapGesture {
-                                expandMiniPlayer.toggle()
-                            }
-                    }
+//                    .tabViewBottomAccessory{
+//                        MiniPlayerView()
+//                            .matchedTransitionSource(id: "MINIPLAYER", in: animation)
+//                            .onTapGesture {
+//                                expandMiniPlayer.toggle()
+//                            }
+//                    }
             } else {
                 NativeTabView()
             }
@@ -337,3 +337,6 @@ struct ContentView: View {
 #Preview {
     ContentView()
 }
+
+
+

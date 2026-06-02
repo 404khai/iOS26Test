@@ -60,6 +60,7 @@ struct MangaReaderView: View {
                         .padding(.bottom, 24)
                     }
                     .coordinateSpace(name: "readerScroll")
+//                    .scrollEdgeEffectStyle(.soft, for: .top)
                     .scrollIndicators(.visible)
                     .onPreferenceChange(ReaderPageOffsetKey.self) { offsets in
                         guard let visibleIndex = offsets.min(by: { $0.value < $1.value })?.key else {
@@ -101,6 +102,15 @@ struct MangaReaderView: View {
                             .foregroundStyle(.white.opacity(0.7))
                     }
                 }
+                
+                ToolbarItemGroup(placement: .topBarTrailing) {
+                    Button {
+                    } label: {
+                        Image(systemName: "ellipsis")
+                    }
+                }
+
+                
             }
             .toolbar(.hidden, for: .tabBar)
             .onAppear {
@@ -144,7 +154,8 @@ struct MangaReaderView: View {
                         .font(.headline.monospacedDigit())
                         .foregroundStyle(.white)
                         .frame(minWidth: 24)
-
+                    
+                    
                     Slider(
                         value: Binding(
                             get: { Double(clampedPageIndex) },
@@ -162,6 +173,13 @@ struct MangaReaderView: View {
                     )
                     .tint(.green)
                     .disabled(pageURLs.count <= 1)
+                
+//                    UISlider.appearance().tintColor = .green
+//                    UISlider(){
+//                        
+//                    }
+//                    .trackConfiguration = .init(allowsTickValuesOnly: true, numberOfTicks: 5)
+                    
 
                     Text("\(max(pageURLs.count, 1))")
                         .font(.headline.monospacedDigit())
