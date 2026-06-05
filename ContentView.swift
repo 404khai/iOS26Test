@@ -339,14 +339,17 @@ struct ContentView: View {
 
 struct AccountSheetView: View {
     @Environment(\.colorScheme) private var colorScheme
-    @State private var darkModeEnabled = false
+    @Environment(\.dismiss) private var dismiss
+    @State private var incognitoModeEnabled = false
 
     private var pageBackground: Color {
-        Color(.systemGroupedBackground)
+        incognitoModeEnabled ? Color.black.opacity(0.94) : Color(.systemGroupedBackground)
     }
 
     private var cardBackground: Color {
-        Color(.secondarySystemGroupedBackground)
+        incognitoModeEnabled
+            ? Color.white.opacity(0.08)
+            : Color(.secondarySystemGroupedBackground)
     }
 
     var body: some View {
@@ -356,38 +359,57 @@ struct AccountSheetView: View {
                     profileHeader
                     statsCard
 
-                    AccountSheetGroup {
+                    AccountSheetGroup(background: cardBackground) {
                         AccountSheetRow(
                             icon: "arrow.down.circle",
-                            title: "Download Queue"
+                            title: "Download Queue",
+                            showsChevron: true
                         )
                     }
 
-                    AccountSheetGroup {
-                        AccountSheetRow(icon: "gearshape", title: "Settings")
-                        Divider()
-                            .padding(.leading, 74)
-                        AccountSheetRow(icon: "tray", title: "Inbox")
+                    AccountSheetGroup(background: cardBackground) {
+                        AccountSheetRow(icon: "gearshape", title: "Settings", showsChevron: true)
+                        accountDivider
+                        AccountSheetRow(icon: "chart.bar", title: "Stats", showsChevron: true)
+                        accountDivider
+                        AccountSheetRow(icon: "tray", title: "Inbox", showsChevron: true)
                     }
 
-                    AccountSheetGroup {
-                        HStack(spacing: 18) {
-                            AccountIcon(symbol: "sun.max")
+                    AccountSheetGroup(background: cardBackground) {
+                        AccountSheetRow(icon: "questionmark.circle", title: "Help & Support", showsChevron: true)
+                        accountDivider
+                        AccountSheetRow(icon: "gift", title: "Donate", showsChevron: true)
+                        accountDivider
+                        AccountSheetRow(icon: "info.circle", title: "About", showsChevron: true)
+                    }
 
-                            Text("Dark Mode")
-                                .font(.title3.weight(.medium))
-                                .fontDesign(.rounded)
-                                .foregroundStyle(.primary)
+                    AccountSheetGroup(background: cardBackground) {
+                        HStack(spacing: 18) {
+                            AccountIcon(symbol: "theatermasks.fill")
+
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Incognito Mode")
+                                    .font(.title3.weight(.medium))
+                                    .fontDesign(.rounded)
+                                    .foregroundStyle(.primary)
+
+                                Text("Read without saving history")
+                                    .font(.footnote)
+                                    .foregroundStyle(.secondary)
+                            }
 
                             Spacer(minLength: 12)
 
-                            Toggle("Dark Mode", isOn: $darkModeEnabled)
+                            Toggle("Incognito Mode", isOn: $incognitoModeEnabled)
                                 .labelsHidden()
-                                .tint(.cyan)
+                                .tint(.accentColor)
+                            
                         }
                         .padding(.horizontal, 18)
                         .padding(.vertical, 18)
                     }
+
+                    logoutButton
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 28)
@@ -396,13 +418,33 @@ struct AccountSheetView: View {
             .background(pageBackground.ignoresSafeArea())
             .navigationTitle("Profile")
             .navigationBarTitleDisplayMode(.inline)
-            .preferredColorScheme(darkModeEnabled ? .dark : .light)
+            .preferredColorScheme(incognitoModeEnabled ? .dark : .light)
             .onAppear {
-                darkModeEnabled = colorScheme == .dark
+                incognitoModeEnabled = colorScheme == .dark
             }
         }
-        .presentationDetents([.medium, .large])
+//        .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
+    }
+
+    private var accountDivider: some View {
+        Divider()
+            .overlay(Color(.separator).opacity(incognitoModeEnabled ? 0.25 : 0.5))
+            .padding(.leading, 74)
+    }
+
+    private var logoutButton: some View {
+        Button(role: .destructive) {
+            dismiss()
+        } label: {
+            Text("Log Out")
+                .font(.title3.weight(.semibold))
+                .fontDesign(.rounded)
+                .frame(maxWidth: .infinity)
+        }
+        .padding(.vertical, 20)
+        .background(cardBackground, in: RoundedRectangle(cornerRadius: 28, style: .continuous))
+        .padding(.top, 6)
     }
 
     private var profileHeader: some View {
@@ -419,24 +461,30 @@ struct AccountSheetView: View {
 
             HStack(alignment: .top, spacing: 16) {
                 VStack(alignment: .leading, spacing: 8) {
-                    HStack(spacing: 8) {
-                        Text("Kaizel")
-                            .font(.system(size: 40, weight: .bold, design: .rounded))
-                            .foregroundStyle(.primary)
+                    HStack(spacing: 32) {
+                        HStack(spacing: 8){
+                            Text("Kaizel")
+                                .font(.system(size: 40, weight: .bold, design: .rounded))
+                                .foregroundStyle(.primary)
 
+                            Image(systemName: "hammer.circle.fill")
+                                .font(.title3)
+                                .foregroundStyle(.mint)
+                        }
+                        
                         Image(systemName: "pencil")
                             .font(.title3)
                             .foregroundStyle(.secondary)
                     }
 
-                    Text("Water is good, Lloyd is water")
+                    Text("El Endministrator, Creator of Keihatsu")
                         .font(.callout)
                         .foregroundStyle(.secondary)
                         .lineLimit(2)
 
                     HStack(spacing: 18) {
                         Label("Member since 2025", systemImage: "calendar")
-                        Label("Switzerland", systemImage: "location")
+                        Label("Switzerland", systemImage: "mappin.and.ellipse")
                     }
                     .font(.footnote)
                     .foregroundStyle(.secondary)
@@ -449,12 +497,13 @@ struct AccountSheetView: View {
                 Button {
                 } label: {
                     Image(systemName: "square.and.arrow.up")
-                        .font(.title2.weight(.semibold))
-                        .frame(width: 58, height: 58)
+                        .font(.title2.weight(.regular))
+                        .frame(width: 50, height: 50)
                 }
                 .buttonStyle(.plain)
-                .foregroundStyle(.white)
-                .background(Color.cyan.opacity(0.55), in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+                .foregroundStyle(.primary)
+                .glassEffect(.regular.interactive())
+//                .glassEffect(.regular.interactive(), in: .rect(cornerRadius: 20))
             }
         }
     }
@@ -472,19 +521,21 @@ struct AccountSheetView: View {
 }
 
 private struct AccountSheetGroup<Content: View>: View {
+    var background: Color = Color(.secondarySystemGroupedBackground)
     @ViewBuilder var content: Content
 
     var body: some View {
         VStack(spacing: 0) {
             content
         }
-        .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 28, style: .continuous))
+        .background(background, in: RoundedRectangle(cornerRadius: 28, style: .continuous))
     }
 }
 
 private struct AccountSheetRow: View {
     let icon: String
     let title: String
+    var showsChevron: Bool = false
 
     var body: some View {
         HStack(spacing: 18) {
@@ -496,6 +547,12 @@ private struct AccountSheetRow: View {
                 .foregroundStyle(.primary)
 
             Spacer(minLength: 0)
+
+            if showsChevron {
+                Image(systemName: "chevron.right")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.tertiary)
+            }
         }
         .padding(.horizontal, 18)
         .padding(.vertical, 20)

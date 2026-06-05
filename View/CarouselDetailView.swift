@@ -294,7 +294,7 @@ struct CarouselDetailView: View {
                 if isBookmarked {
                     Image(systemName: "bookmark.fill")
                         .font(.body.weight(.semibold))
-                        .foregroundStyle(.yellow)
+                        .foregroundStyle(.tint)
                 }
 
                 VStack(alignment: .leading, spacing: 4) {
@@ -324,7 +324,7 @@ struct CarouselDetailView: View {
             } label: {
                 Label(isBookmarked ? "Unbookmark" : "Bookmark", systemImage: isBookmarked ? "bookmark.slash" : "bookmark")
             }
-            .tint(.yellow)
+            .tint(.accentColor)
         }
         .swipeActions(edge: .trailing, allowsFullSwipe: true) {
             Button {
