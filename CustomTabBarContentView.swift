@@ -66,7 +66,7 @@ struct CustomTabBarContentView: View {
                     
             }
             .sheet(isPresented: $showMenu) {
-                Text("Account Sheet")
+                AccountSheetView()
                     .navigationTransition(.zoom(sourceID: "Account", in: animation))
             }
 
@@ -125,5 +125,4 @@ extension View {
 #Preview {
     ContentView()
 }
-
 

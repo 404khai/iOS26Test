@@ -52,7 +52,7 @@ struct PluginsView: View {
             .padding(.top, 16)
             .padding(.bottom, 32)
         }
-        .background(Color.black.ignoresSafeArea())
+        .background(Color(.systemGroupedBackground).ignoresSafeArea())
         .navigationTitle("Plugins")
         .navigationBarTitleDisplayMode(.automatic)
 //        .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
@@ -95,16 +95,16 @@ private struct PluginCard: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(item.name)
                     .font(.headline)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(.primary)
 
                 Text(item.subtitle)
                     .font(.subheadline)
-                    .foregroundStyle(.white.opacity(0.6))
+                    .foregroundStyle(.secondary)
                     .lineLimit(1)
 
                 Text(item.status)
                     .font(.footnote.weight(.medium))
-                    .foregroundStyle(.white.opacity(0.75))
+                    .foregroundStyle(isEnabled ? .green : .secondary)
             }
 
             Spacer(minLength: 0)
@@ -112,7 +112,7 @@ private struct PluginCard: View {
             VStack(spacing: 14) {
                 Image(systemName: "pin")
                     .font(.body)
-                    .foregroundStyle(.white.opacity(0.55))
+                    .foregroundStyle(.secondary)
 
                 Toggle("", isOn: $isEnabled)
                     .labelsHidden()
@@ -120,10 +120,10 @@ private struct PluginCard: View {
             }
         }
         .padding(16)
-        .background(Color.white.opacity(0.07), in: RoundedRectangle(cornerRadius: 22, style: .continuous))
+        .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 22, style: .continuous))
         .overlay {
             RoundedRectangle(cornerRadius: 22, style: .continuous)
-                .stroke(Color.white.opacity(0.06), lineWidth: 1)
+                .stroke(Color(.separator).opacity(0.35), lineWidth: 1)
         }
     }
 }
@@ -136,18 +136,18 @@ private struct PluginPlaceholderCard: View {
         VStack(alignment: .leading, spacing: 8) {
             Text(title)
                 .font(.headline)
-                .foregroundStyle(.white)
+                .foregroundStyle(.primary)
 
             Text(subtitle)
                 .font(.subheadline)
-                .foregroundStyle(.white.opacity(0.65))
+                .foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(18)
-        .background(Color.white.opacity(0.07), in: RoundedRectangle(cornerRadius: 22, style: .continuous))
+        .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 22, style: .continuous))
         .overlay {
             RoundedRectangle(cornerRadius: 22, style: .continuous)
-                .stroke(Color.white.opacity(0.06), lineWidth: 1)
+                .stroke(Color(.separator).opacity(0.35), lineWidth: 1)
         }
     }
 }

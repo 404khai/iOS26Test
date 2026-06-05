@@ -214,9 +214,8 @@ struct ContentView: View {
                         .matchedTransitionSource(id: "Account", in: animation)
                     }
                     .sheet(isPresented: $showMenu) {
-                        Text("Account Sheet")
+                        AccountSheetView()
                             .navigationTransition(.zoom(sourceID: "Account", in: animation))
-                
                     }
                     .navigationDestination(for: ImageModel.self) { item in
                         CarouselDetailView(item: item, animation: animation)
@@ -338,5 +337,208 @@ struct ContentView: View {
     ContentView()
 }
 
+struct AccountSheetView: View {
+    @Environment(\.colorScheme) private var colorScheme
+    @State private var darkModeEnabled = false
 
+    private var pageBackground: Color {
+        Color(.systemGroupedBackground)
+    }
 
+    private var cardBackground: Color {
+        Color(.secondarySystemGroupedBackground)
+    }
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 22) {
+                    profileHeader
+                    statsCard
+
+                    AccountSheetGroup {
+                        AccountSheetRow(
+                            icon: "arrow.down.circle",
+                            title: "Download Queue"
+                        )
+                    }
+
+                    AccountSheetGroup {
+                        AccountSheetRow(icon: "gearshape", title: "Settings")
+                        Divider()
+                            .padding(.leading, 74)
+                        AccountSheetRow(icon: "tray", title: "Inbox")
+                    }
+
+                    AccountSheetGroup {
+                        HStack(spacing: 18) {
+                            AccountIcon(symbol: "sun.max")
+
+                            Text("Dark Mode")
+                                .font(.title3.weight(.medium))
+                                .fontDesign(.rounded)
+                                .foregroundStyle(.primary)
+
+                            Spacer(minLength: 12)
+
+                            Toggle("Dark Mode", isOn: $darkModeEnabled)
+                                .labelsHidden()
+                                .tint(.cyan)
+                        }
+                        .padding(.horizontal, 18)
+                        .padding(.vertical, 18)
+                    }
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 28)
+                .padding(.bottom, 34)
+            }
+            .background(pageBackground.ignoresSafeArea())
+            .navigationTitle("Profile")
+            .navigationBarTitleDisplayMode(.inline)
+            .preferredColorScheme(darkModeEnabled ? .dark : .light)
+            .onAppear {
+                darkModeEnabled = colorScheme == .dark
+            }
+        }
+        .presentationDetents([.medium, .large])
+        .presentationDragIndicator(.visible)
+    }
+
+    private var profileHeader: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Image("user1")
+                .resizable()
+                .scaledToFill()
+                .frame(width: 116, height: 116)
+                .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 28, style: .continuous)
+                        .stroke(.primary.opacity(colorScheme == .dark ? 0.14 : 0.08), lineWidth: 1)
+                }
+
+            HStack(alignment: .top, spacing: 16) {
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack(spacing: 8) {
+                        Text("Kaizel")
+                            .font(.system(size: 40, weight: .bold, design: .rounded))
+                            .foregroundStyle(.primary)
+
+                        Image(systemName: "pencil")
+                            .font(.title3)
+                            .foregroundStyle(.secondary)
+                    }
+
+                    Text("Water is good, Lloyd is water")
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(2)
+
+                    HStack(spacing: 18) {
+                        Label("Member since 2025", systemImage: "calendar")
+                        Label("Switzerland", systemImage: "location")
+                    }
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+                }
+
+                Spacer(minLength: 0)
+
+                Button {
+                } label: {
+                    Image(systemName: "square.and.arrow.up")
+                        .font(.title2.weight(.semibold))
+                        .frame(width: 58, height: 58)
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(.white)
+                .background(Color.cyan.opacity(0.55), in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+            }
+        }
+    }
+
+    private var statsCard: some View {
+        HStack(spacing: 0) {
+            AccountStat(value: "143", label: "in Library")
+            AccountStat(value: "5h", label: "reading")
+            AccountStat(value: "7", label: "read")
+            AccountStat(value: "3", label: "comments", showsDivider: false)
+        }
+        .padding(.vertical, 18)
+        .background(cardBackground, in: RoundedRectangle(cornerRadius: 28, style: .continuous))
+    }
+}
+
+private struct AccountSheetGroup<Content: View>: View {
+    @ViewBuilder var content: Content
+
+    var body: some View {
+        VStack(spacing: 0) {
+            content
+        }
+        .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 28, style: .continuous))
+    }
+}
+
+private struct AccountSheetRow: View {
+    let icon: String
+    let title: String
+
+    var body: some View {
+        HStack(spacing: 18) {
+            AccountIcon(symbol: icon)
+
+            Text(title)
+                .font(.title3.weight(.medium))
+                .fontDesign(.rounded)
+                .foregroundStyle(.primary)
+
+            Spacer(minLength: 0)
+        }
+        .padding(.horizontal, 18)
+        .padding(.vertical, 20)
+    }
+}
+
+private struct AccountIcon: View {
+    let symbol: String
+
+    var body: some View {
+        Image(systemName: symbol)
+            .font(.title2.weight(.medium))
+            .symbolRenderingMode(.hierarchical)
+            .frame(width: 38, height: 38)
+            .foregroundStyle(.primary)
+    }
+}
+
+private struct AccountStat: View {
+    let value: String
+    let label: String
+    var showsDivider = true
+
+    var body: some View {
+        HStack(spacing: 0) {
+            VStack(spacing: 4) {
+                Text(value)
+                    .font(.title.bold())
+                    .fontDesign(.rounded)
+                    .foregroundStyle(.primary)
+
+                Text(label)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+            }
+            .frame(maxWidth: .infinity)
+
+            if showsDivider {
+                Rectangle()
+                    .fill(Color(.separator).opacity(0.5))
+                    .frame(width: 1, height: 42)
+            }
+        }
+    }
+}

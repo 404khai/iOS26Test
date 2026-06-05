@@ -7,7 +7,8 @@ struct CarouselDetailView: View {
     @State private var selectedCategories: Set<String> = ["DEFAULT"]
     @State private var showCollapsedHeader: Bool = false
     @State private var bookmarkedChapters: Set<Int> = []
-    @State private var dimmedChapters: Set<Int> = []
+    @State private var readChapters: Set<Int> = []
+    @State private var navigateToChapter: ChapterEntry?
     
     private var chapters: [ChapterEntry] {
         if item.title == "Ordeal" {
@@ -24,6 +25,9 @@ struct CarouselDetailView: View {
     }
 
     private let categories = ["DEFAULT", "Thriller"]
+    private var chapterListHeight: CGFloat {
+        CGFloat(chapters.count) * 76
+    }
 
     var body: some View {
         ScrollView {
@@ -89,6 +93,9 @@ struct CarouselDetailView: View {
             categorySheet
                 .presentationDetents([.height(280)])
                 .presentationDragIndicator(.visible)
+        }
+        .navigationDestination(item: $navigateToChapter) { chapter in
+            MangaReaderView(item: item, chapters: chapters, initialChapterID: chapter.id)
         }
     }
     
@@ -193,33 +200,18 @@ struct CarouselDetailView: View {
                 .font(.title3.weight(.semibold))
                 .foregroundStyle(.white)
             
-            VStack(spacing: 0) {
+            List {
                 ForEach(chapters) { chapter in
                     chapterRow(chapter)
-
-                    if chapter.id < chapters.count {
-                        Divider()
-                            .overlay(.white.opacity(0.08))
-                            .padding(.leading, 18)
-                    }
+                        .listRowInsets(EdgeInsets())
+                        .listRowSeparatorTint(.white.opacity(0.08))
+                        .listRowBackground(Color.clear)
                 }
             }
-            
-//            List{
-//                ForEach(tasks) { task in
-//                    HStack{
-//                        Text(task.title)
-//                            .strikethrough(task.isCompleted)
-//                        Image(systemName: task.isCompleted ?
-//                            "checkmark.seal.fill": "circlebadge")
-//                        }
-//                            .onTapGesture {
-//                                toggleTask(task)
-//                            }
-//                    }
-//                    .onDelete(perform: deleteTask)
-//            }
-            
+            .listStyle(.plain)
+            .scrollDisabled(true)
+            .scrollContentBackground(.hidden)
+            .frame(height: chapterListHeight)
             .background(.white.opacity(0.07), in: RoundedRectangle(cornerRadius: 24, style: .continuous))
             .overlay {
                 RoundedRectangle(cornerRadius: 24, style: .continuous)
@@ -293,64 +285,57 @@ struct CarouselDetailView: View {
     @ViewBuilder
     private func chapterRow(_ chapter: ChapterEntry) -> some View {
         let isBookmarked = bookmarkedChapters.contains(chapter.id)
-        let isDimmed = dimmedChapters.contains(chapter.id)
+        let isRead = readChapters.contains(chapter.id)
 
-        NavigationLink {
-            MangaReaderView(item: item, chapters: chapters, initialChapterID: chapter.id)
+        Button {
+            navigateToChapter = chapter
         } label: {
             HStack(spacing: 12) {
-                Image(systemName: isBookmarked ? "bookmark.fill" : "bookmark")
-                    .font(.body.weight(.semibold))
-                    .foregroundStyle(isBookmarked ? .yellow : .white.opacity(0.45))
+                if isBookmarked {
+                    Image(systemName: "bookmark.fill")
+                        .font(.body.weight(.semibold))
+                        .foregroundStyle(.yellow)
+                }
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(chapter.title)
                         .font(.headline)
-                        .foregroundStyle(isDimmed ? .white.opacity(0.45) : .white)
+                        .foregroundStyle(isRead ? .white.opacity(0.45) : .white)
+//                        .strikethrough(isRead, color: .white.opacity(0.5))
 
                     Text(chapter.date)
                         .font(.subheadline)
-                        .foregroundStyle(isDimmed ? .white.opacity(0.35) : .white.opacity(0.62))
+                        .foregroundStyle(isRead ? .white.opacity(0.35) : .white.opacity(0.62))
                 }
 
                 Spacer()
 
                 Image(systemName: "arrow.down.circle")
                     .font(.title3.weight(.semibold))
-//                    .font(.system(size: 20, weight: .bold))
                     .foregroundStyle(.secondary)
-//                    .font(.body.weight(.bold))
-//                    .foregroundStyle(.white.opacity(0.45))
             }
             .padding(.horizontal, 18)
             .padding(.vertical, 16)
         }
         .buttonStyle(.plain)
-        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+        .swipeActions(edge: .leading, allowsFullSwipe: true) {
             Button {
                 toggleBookmark(for: chapter.id)
             } label: {
-                Label("Bookmark", systemImage: isBookmarked ? "bookmark.slash" : "bookmark")
+                Label(isBookmarked ? "Unbookmark" : "Bookmark", systemImage: isBookmarked ? "bookmark.slash" : "bookmark")
             }
             .tint(.yellow)
         }
-        .swipeActions(edge: .leading, allowsFullSwipe: true) {
+        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
             Button {
-                toggleDim(for: chapter.id)
+                toggleRead(for: chapter.id)
             } label: {
-                Label("Shade", systemImage: "circle.lefthalf.filled")
+                Label(isRead ? "Mark Unread" : "Mark Read", systemImage: isRead ? "circle" : "checkmark.circle.fill")
             }
-            .tint(.gray)
+            .tint(isRead ? .gray : .green)
         }
     }
-    
-    // demo task deletion by swiping left
-//    private func deleteTask(at offsets:IndexSet){
-//        for index in offsets{
-//            modelContext.delete(tasks[index])
-//        }
-//    }
-    
+
     private func toggleBookmark(for id: Int) {
         if bookmarkedChapters.contains(id) {
             bookmarkedChapters.remove(id)
@@ -359,16 +344,16 @@ struct CarouselDetailView: View {
         }
     }
 
-    private func toggleDim(for id: Int) {
-        if dimmedChapters.contains(id) {
-            dimmedChapters.remove(id)
+    private func toggleRead(for id: Int) {
+        if readChapters.contains(id) {
+            readChapters.remove(id)
         } else {
-            dimmedChapters.insert(id)
+            readChapters.insert(id)
         }
     }
 }
 
-struct ChapterEntry: Identifiable {
+struct ChapterEntry: Identifiable, Hashable {
     let id: Int
     let title: String
     let date: String

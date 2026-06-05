@@ -58,5 +58,21 @@ var images: [ImageModel] = [
         category: "Thriller",
         metadataLine: "Action • Dark Fantasy • Survival",
         summary: "Each choice has consequences as the protagonist faces escalating dangers in a brutal world."
-    )
+    ),
+    ImageModel(
+        image: "Image7",
+        title: "Return of the SSS Class Ranker",
+        category: "Action",
+        metadataLine: "Action • Mythology • Survival",
+        summary: "Each choice has consequences as the protagonist faces escalating dangers in a brutal world."
+    ),
+    ImageModel(
+        image: "Image8",
+        title: "Legend of the Northern Blade",
+        category: "Thriller",
+        metadataLine: "Action • Murim • Survival",
+        summary: "Jin Muwon must take revenge for his father's murder while rebuilding the lost Northern Blade Sect."
+    ),
+
+
 ]

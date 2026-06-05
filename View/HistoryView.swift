@@ -194,15 +194,15 @@ private struct HistorySection: Identifiable {
         ]),
         HistorySection(date: "27 May, 2026", items: [
             HistoryItem(image: "Image3", title: "The World After the Fall", chapter: "Chapter 57", time: "11:16"),
-            HistoryItem(image: "Image4", title: "Player", chapter: "Chapter 39", time: "20:04")
+            HistoryItem(image: "Image7", title: "Return of the SSS Class Ranker", chapter: "Chapter 139", time: "19:04")
         ]),
         HistorySection(date: "26 May, 2026", items: [
-            HistoryItem(image: "Image5", title: "Ordeal", chapter: "Chapter 72", time: "17:31"),
+            HistoryItem(image: "Image8", title: "Legend of the Northern Blade", chapter: "Chapter 112", time: "17:31"),
             HistoryItem(image: "Image6", title: "Superhuman Battlefield", chapter: "Chapter 91", time: "22:12")
         ]),
         HistorySection(date: "25 May, 2026", items: [
             HistoryItem(image: "Image2", title: "Latna Saga", chapter: "Chapter 83", time: "06:54"),
-            HistoryItem(image: "Image1", title: "The Regressed Mercenary's Machinations", chapter: "Chapter 109", time: "14:20")
+            HistoryItem(image: "Image3", title: "The World After the Fall", chapter: "Chapter 57", time: "11:16"),
         ]),
         HistorySection(date: "24 May, 2026", items: [
             HistoryItem(image: "Image4", title: "Player", chapter: "Chapter 38", time: "09:18"),
